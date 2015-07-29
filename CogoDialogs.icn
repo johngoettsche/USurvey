@@ -1,0 +1,123 @@
+import gui
+$include "guih.icn"
+
+procedure getPointList()
+	local
+		pointList,
+		point
+		
+	pointList := []
+	every point := !points do 
+		put(pointList, point.id)
+	return pointList
+end
+ 
+class CogoMeasureBetweenPoints : Dialog()
+	local
+		list1,
+		list2,
+		txtFieldN1,
+		txtFieldE1,
+		txtFieldEl1,
+		txtFieldN2,
+		txtFieldE2,
+		txtFieldEl2,
+		txtFieldBearing,
+		txtFieldDistance,
+		distDir
+		
+	method okButton(ev)
+		self.dispose()
+	end
+	
+	method handleSelection1(ev)
+		txtFieldN1.set_contents(points[list1.get_selection()].n)
+		txtFieldE1.set_contents(points[list1.get_selection()].e)
+		txtFieldEl1.set_contents(points[list1.get_selection()].el)
+		if *txtFieldN2.get_contents() > 0 then {
+			distDir := pointInverse(points[list1.get_selection()], points[list2.get_selection()])
+			txtFieldBearing.set_contents(distDir.direction)
+			txtFieldDistance.set_contents(distDir.distance)
+		}
+	end
+	
+	method handleSelection2(ev)
+	write("got here!")
+		txtFieldN2.set_contents(points[list2.get_selection()].n)
+		txtFieldE2.set_contents(points[list2.get_selection()].e)
+		txtFieldEl2.set_contents(points[list2.get_selection()].el)
+		write("should be updated")
+		if *txtFieldN1.get_contents() > 0 then {
+			distDir := pointInverse(points[list1.get_selection()], points[list2.get_selection()])
+			txtFieldBearing.set_contents(distDir.direction)
+			txtFieldDistance.set_contents(distDir.distance)
+		}
+	end
+	
+	method component_setup()
+		self.set_attribs("size=650,250","bg=light gray", "font=serif", "resize=on")
+		pointList := getPointList()
+
+		list1 := List()
+      list1.set_pos(10, 10)
+      list1.set_size(100)
+      list1.set_selection_list(pointList)
+		list1.connect(self, "handleSelection1", SELECTION_CHANGED_EVENT)
+      self.add(list1)
+		
+		txtFieldN1 := TextField()
+		txtFieldN1.set_pos(20, 40)
+		txtFieldN1.set_size(200)
+		txtFieldN1.set_contents("")
+		add(txtFieldN1)
+		
+		txtFieldE1 := TextField()
+		txtFieldE1.set_pos(20, 70)
+		txtFieldE1.set_size(200)
+		add(txtFieldE1)
+		
+		txtFieldEl1 := TextField()
+		txtFieldEl1.set_pos(20, 100)
+		txtFieldEl1.set_size(200)
+		add(txtFieldEl1)
+		
+		list2 := List()
+      list2.set_pos(300, 10)
+      list2.set_size(100)
+      list2.set_selection_list(pointList)
+		list2.connect(self, "handleSelection2", SELECTION_CHANGED_EVENT)
+      self.add(list2)
+		
+		txtFieldN2 := TextField()
+		txtFieldN2.set_pos(320, 40)
+		txtFieldN2.set_size(200)
+		txtFieldN2.set_contents("")
+		add(txtFieldN2)
+		
+		txtFieldE2 := TextField()
+		txtFieldE2.set_pos(320, 70)
+		txtFieldE2.set_size(200)
+		add(txtFieldE2)
+		
+		txtFieldEl2 := TextField()
+		txtFieldEl2.set_pos(320, 100)
+		txtFieldEl2.set_size(200)
+		add(txtFieldEl2)
+		
+		txtFieldBearing := TextField()
+		txtFieldBearing.set_pos(50, 150)
+		txtFieldBearing.set_size(200)
+		add(txtFieldBearing)
+		
+		txtFieldDistance := TextField()
+		txtFieldDistance.set_pos(300, 150)
+		txtFieldDistance.set_size(200)
+		add(txtFieldDistance)
+		
+		ok := TextButton("label=Ok", "pos=50%, 200", "align=c,c")
+		ok.connect(self, "dispose", ACTION_EVENT)
+		add(ok)
+		
+		#findPointFromList(pts, pt)
+	end
+end

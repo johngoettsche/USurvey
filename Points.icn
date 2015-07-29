@@ -1,0 +1,24 @@
+
+
+procedure findPointFromList(pts, pt)
+	local
+		point
+		
+	every point := !pts do {
+		if point.id == pt then return point
+	}
+	return -1
+end
+
+class Point(id, n, e, el, desc, ptType, parcels, boundaries)
+
+initially(ptype)
+	id := ""
+	n := 5000.000
+	e := 10000.000
+	el := 100.000
+	disc := ""
+	ptType := ptype
+	parcels := []
+	boundaries := []
+end

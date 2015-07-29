@@ -1,0 +1,3 @@
+procedure settings(item, x, y)
+	item.set_attribs("bg=white", "font=serif", "resize=off", "fg=black", "border=blue", "size=" || x || ", " || y)
+end

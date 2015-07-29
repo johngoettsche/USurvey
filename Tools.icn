@@ -1,0 +1,27 @@
+procedure txtSizeRt(size, txt)
+	local
+		l,
+		spaces
+	
+	spaces := ""
+	l := size - *txt
+	while l > 0 do {
+		spaces := spaces || " "
+		l -:= 1
+	}
+	return spaces || txt
+end
+
+procedure txtSizeLt(size, txt)
+	local
+		l,
+		spaces
+	
+	spaces := ""
+	l := size - *txt
+	while l > 0 do {
+		spaces := spaces || " "
+		l -:= 1
+	}
+	return txt || spaces
+end

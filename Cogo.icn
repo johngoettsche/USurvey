@@ -1,0 +1,95 @@
+
+procedure initializeCogoPatterns()
+	north := Any("Nn") .| "North"
+   south := Any("Ss") .| "South"
+   east := Any("Ee") .| "East"
+   west := Any("Ww") .| "West"
+   northsouth := north .| south
+   eastwest := east .| west
+end
+
+procedure bearingToRad(bearng)
+   local
+      degr
+
+   bearng.ns ? {
+      if =north then {
+         degr := 0.0
+         bearng.ew ? 
+            if =east then degr := bearng.deg
+            else degr -:= bearng.deg
+         } 
+      else {
+         degr := 180.0
+         bearng.ew ? 
+            if =east then degr -:= bearng.deg
+            else degr +:= bearng.deg
+         }
+      }
+   return toRad(degr, minutes, seconds)
+end
+
+procedure radToDMS(rad)
+   degr := (180 * rad) / pi
+	degr -:= 90
+	degr *:= -1
+	if degr < 0 then degr := 360.0 - degr
+	return degr
+end
+
+procedure dmsToRad(deg, mins, secs)
+   local
+      degr,
+      minutes,
+      seconds
+		
+   if /mins then mins := 0.0
+   if /secs then secs := 0.0 
+   degr := 90.0 - deg
+   if degr < 0.0 then degr +:= 360.0 
+   minutes := 60.0 - mins
+   if minutes = 60.0 then minutes := 0.0
+   seconds := 60.0 - secs
+   if seconds = 60 then seconds := 0.0
+   if \minutes then degr +:= minutes / 60.0
+   if \seconds then degr +:= seconds / 3600.0
+   return (degr / 180.0) * &pi
+end
+
+procedure pointInverse(pt1, pt2)
+	local
+		diffN,
+		diffE,
+		diffEl,
+		distance,
+		distDir,
+		rad
+		
+	diffN := pt1.n - pt2.n
+	diffE := pt1.e - pt2.e
+	diffEl := pt1.el - pt2.el
+	distance := sqrt(diffN^2 + diffE^2 + diffEl^2)
+	if distance > 0 then {
+		rad := asin(diffN / distance)
+		if acos(diffN / distance) < 0 then rad +:= &pi
+	} 	
+	distDir := DistDir(distance, rad)
+	return distDir
+end
+
+class DistDir(distance, direction)
+
+initially(dis, dir)
+	distance := dis
+	direction := dir
+end
+
+class Bearing(ns, deg, minu, sec, ew)
+
+initially(norsou, degr, mins, secs, easwes)
+   ns := norsou
+   deg := degr
+   min := mins
+   sec := secs
+   ew := easwes
+end
