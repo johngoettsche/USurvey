@@ -8,75 +8,165 @@ procedure initializeCogoPatterns()
    eastwest := east .| west
 end
 
-procedure bearingToRad(bearng)
-   local
-      degr
-
-   bearng.ns ? {
-      if =north then {
-         degr := 0.0
-         bearng.ew ? 
-            if =east then degr := bearng.deg
-            else degr -:= bearng.deg
-         } 
-      else {
-         degr := 180.0
-         bearng.ew ? 
-            if =east then degr -:= bearng.deg
-            else degr +:= bearng.deg
-         }
-      }
-   return toRad(degr, minutes, seconds)
-end
-
-procedure radToDMS(rad)
-   degr := (180 * rad) / pi
-	degr -:= 90
-	degr *:= -1
-	if degr < 0 then degr := 360.0 - degr
-	return degr
-end
-
-procedure dmsToRad(deg, mins, secs)
-   local
-      degr,
-      minutes,
-      seconds
+#distance calculations
+procedure distanceHorz(pt1, pt2)
+	local
+		diffN,
+		diffE
 		
-   if /mins then mins := 0.0
-   if /secs then secs := 0.0 
-   degr := 90.0 - deg
-   if degr < 0.0 then degr +:= 360.0 
-   minutes := 60.0 - mins
-   if minutes = 60.0 then minutes := 0.0
-   seconds := 60.0 - secs
-   if seconds = 60 then seconds := 0.0
-   if \minutes then degr +:= minutes / 60.0
-   if \seconds then degr +:= seconds / 3600.0
-   return (degr / 180.0) * &pi
+	diffN := pt1.n - pt2.n
+	diffE := pt1.e - pt2.e
+	return sqrt(diffN^2 + diffE^2)
 end
 
-procedure pointInverse(pt1, pt2)
+procedure distanceSlope(pt1, pt2)
 	local
 		diffN,
 		diffE,
-		diffEl,
-		distance,
-		distDir,
-		rad
+		diffEl
 		
 	diffN := pt1.n - pt2.n
 	diffE := pt1.e - pt2.e
 	diffEl := pt1.el - pt2.el
-	distance := sqrt(diffN^2 + diffE^2 + diffEl^2)
+	return sqrt(diffN^2 + diffE^2 + diffEl^2)
+end
+
+#direction calculations
+procedure azimuthToBearing(azimuth)
+   local
+		bearing
+	
+	bearing := Bearing("N", azimuth.deg, azimuth.minu, azimuth.sec, "E")
+	if azimuth.deg > 270 then {
+		bearing.deg := 360 - bearing.deg
+		if bearing.minu != 0 then bearing.minu := 60 - bearing.minu 
+		else bearing.minu := 0
+		if bearing.sec != 0 then bearing.sec := 60 - bearing.sec 
+		else bearing.sec := 0
+		bearing.ew := "W"
+	}
+	else if azimuth.deg > 180 then {
+		bearing.ns := "S"
+		bearing.deg -:= 180
+		bearing.ew := "W"
+	}
+	else if azimuth.deg > 90 then {
+		bearing.ns := "S"
+		bearing.deg := 180 - bearing.deg
+		if bearing.minu != 0 then bearing.minu := 60 - bearing.minu 
+		else bearing.minu := 0
+		if bearing.sec != 0 then bearing.sec := 60 - bearing.sec 
+		else bearing.sec := 0
+	}
+	else {
+		#process error
+	}
+	return bearing
+end
+
+procedure azimuthToRadians(azimuth)
+   local
+      degr,
+		rad
+	
+	degr := azimuth.sec / 3600
+	degr +:= azimuth.minu / 60
+	degr +:= azimuth.deg + 90
+	if degr > 360 then degr -:= 360
+	degr := 360 - degr
+	rad := (degr / 180) * &pi
+   return rad
+end
+
+procedure bearingToAzimuth(bearng)
+   local
+		azimuth
+	
+	azimuth := Azimuth(bearing.deg, bearing.minu, bearing.sec)
+	if bearing.ns == ("North" | "north" | "N" | "n") then {
+		if bearing.ew == ("West" | "west" | "W" | "w") then {
+			azimuth.deg := 360 - azimuth.deg
+			if azimuth.minu > 0 then azimuth.minu := 60 - azimuth.minu 
+			if azimuth.sec > 0 then azimuth.sec := 60 - azimuth.sec 
+		}
+	}
+	else if bearing.ns == ("South" | "south" | "S" | "s") then {
+		if bearing.ew == ("East" | "east" | "E" | "e") then {
+			azimuth.deg := 180 - azimuth.deg
+			if azimuth.minu > 0 then azimuth.minu := 60 - azimuth.minu 
+			if azimuth.sec > 0 then azimuth.sec := 60 - azimuth.sec 
+		}
+		else azimuth.deg +:= 180
+	}
+	else {
+		#process error
+	}
+	return azimuth
+end
+
+procedure bearingToRadians(bearing)
+	local 
+		azimuth
+		
+	azimuth := bearingToAzimuth(bearing)
+	return azimuthToRadians(azimuth)
+end
+
+procedure radiansToAzimuth(rad)
+	local 
+		azimuth,
+		decDeg
+		
+	rad -:= &pi / 2
+	rad *:= -1
+	
+	while rad < 0 do rad +:= 2 * &pi
+	while rad > (2 * &pi) do rad -:= 2 * &pi
+	azimuth := Azimuth(0, 0, 0)
+	decDeg := (rad * 180) / &pi
+	azimuth.deg := integer(decDeg)
+	decDeg -:= integer(decDeg)
+	decDeg *:= 60
+	azimuth.minu := integer(decDeg)
+	decDeg -:= integer(decDeg)
+	decDeg *:= 60
+	azimuth.sec := integer(decDeg)
+	return azimuth
+end
+
+procedure radiansToBearing(rad)
+	azimuth := radiansToAzimuth(rad)
+	return azimuthToBearing(azimuth)
+end
+
+#functional calculations
+procedure pointInverse(pt1, pt2)
+	local
+		distance,
+		distDir,
+		diffN,
+		diffE,
+		rad
+		
+	distance := distanceHorz(pt1, pt2)
 	if distance > 0 then {
+		diffN := pt2.n - pt1.n
+		diffE := pt2.e - pt1.e
 		rad := asin(diffN / distance)
-		if acos(diffN / distance) < 0 then rad +:= &pi
+		if diffE < 0 then {
+			if diffN < 0 then rad -:= (&pi / 2)
+			else rad +:= (&pi / 2)
+		}
+		write(rad)
 	} 	
+	else {
+		rad := &pi / 2
+	}
 	distDir := DistDir(distance, rad)
 	return distDir
 end
 
+#combined classes
 class DistDir(distance, direction)
 
 initially(dis, dir)
@@ -84,12 +174,21 @@ initially(dis, dir)
 	direction := dir
 end
 
+#primitive classes
+class Azimuth(deg, minu, sec)
+
+initially(d, m, s)
+	deg := d
+	minu := m
+	sec := s
+end
+
 class Bearing(ns, deg, minu, sec, ew)
 
-initially(norsou, degr, mins, secs, easwes)
+initially(norsou, d, m, s, easwes)
    ns := norsou
-   deg := degr
-   min := mins
-   sec := secs
+   deg := d
+   minu := m
+   sec := s
    ew := easwes
 end

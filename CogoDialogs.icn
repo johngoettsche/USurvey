@@ -31,25 +31,31 @@ class CogoMeasureBetweenPoints : Dialog()
 	end
 	
 	method handleSelection1(ev)
+		local
+			bearing
+			
 		txtFieldN1.set_contents(points[list1.get_selection()].n)
 		txtFieldE1.set_contents(points[list1.get_selection()].e)
 		txtFieldEl1.set_contents(points[list1.get_selection()].el)
 		if *txtFieldN2.get_contents() > 0 then {
 			distDir := pointInverse(points[list1.get_selection()], points[list2.get_selection()])
-			txtFieldBearing.set_contents(distDir.direction)
+			bearing := radiansToBearing(distDir.direction)
+			txtFieldBearing.set_contents(bearing.ns || " " || bearing.deg || "*" || bearing.minu || "\'"|| bearing.sec || "\"" || bearing.ew) #"
 			txtFieldDistance.set_contents(distDir.distance)
 		}
 	end
 	
 	method handleSelection2(ev)
-	write("got here!")
+		local 
+			bearing
+			
 		txtFieldN2.set_contents(points[list2.get_selection()].n)
 		txtFieldE2.set_contents(points[list2.get_selection()].e)
 		txtFieldEl2.set_contents(points[list2.get_selection()].el)
-		write("should be updated")
 		if *txtFieldN1.get_contents() > 0 then {
 			distDir := pointInverse(points[list1.get_selection()], points[list2.get_selection()])
-			txtFieldBearing.set_contents(distDir.direction)
+			bearing := radiansToBearing(distDir.direction)
+			txtFieldBearing.set_contents(bearing.ns || " " || bearing.deg || "*" || bearing.minu || "\'"|| bearing.sec || "\"" || bearing.ew) #"
 			txtFieldDistance.set_contents(distDir.distance)
 		}
 	end
