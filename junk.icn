@@ -1,7 +1,7 @@
 import gui
 $include "guih.icn"
 
-class Untitled : Dialog(list_1)
+class Untitled : Dialog(list_1, table_1)
    method component_setup()
       self.setup()
    end
@@ -14,11 +14,11 @@ class Untitled : Dialog(list_1)
 
    method setup()
       self.set_attribs("size=644,399")
-      list_1 := List()
-      list_1.set_pos(10, 10)
-      list_1.set_size(100, )
-      list_1.set_selection_list([])
-      self.add(list_1)
+      table_1 := Table()
+      table_1.set_pos(10, 10)
+      table_1.set_size(277, 153)
+      table_1.set_contents([])
+      self.add(table_1)
    end
 
    initially
@@ -32,19 +32,19 @@ procedure main()
 end
 
 ### Ivib-v2 layout ##
-#class|Canvas|17|Name Table|table|integer|0|1|string|list|integer|1|Sup
-#erClass Name|string|Dialog|Import Name|string|gui|Button Groups|class|
-#ButtonGroupSet|2|Parent Canvas|1|Boxes|list|0|Checkbox Groups|class|Ch
-#eckBoxGroupSet|2|Parent Canvas|1|Boxes|list|0|Gen Indent|integer|3|Gen
-# Main|integer|1|Gen Component Setup|integer|1|Gen Init Dialog|integer|
-#1|Gen Initially|integer|1|Dialog Struct|class|CDialog|4|Min Width|null
-#|Min Height|null|Ticker Rate|null|Attribs|list|0|Name|string|Untitled|
-#Width|integer|644|Height|integer|399|Items|list|1|class|CanvasList|28|
-#Parent Canvas|1|Name|string|list_1|Class Name|string|List|Import Name|
-#string|gui|X Fix|null|Y Fix|null|W Fix|null|H Fix|null|W Default|null|
-#H Default|integer|1|X Spec|integer|10|Y Spec|integer|10|W Spec|integer
-#|100|H Spec|integer|24|X Align|string|l|Y Align|string|t|Is shaded|nul
-#l|Is Button Subclass|null|Draw Border|null|Attribs|list|0|Tooltip|null
-#|Accel|null|Event Handlers|null|Class Variable|integer|1|Parent Compon
-#ent|1|Constant Label|null|Selection|integer|1|Selection List|list|0|In
-#itial Focus|null|Event Handlers|null|
+#class|Canvas|17|Name Table|table|integer|0|2|string|list|integer|1|str
+#ing|table|integer|1|SuperClass Name|string|Dialog|Import Name|string|g
+#ui|Button Groups|class|ButtonGroupSet|2|Parent Canvas|1|Boxes|list|0|C
+#heckbox Groups|class|CheckBoxGroupSet|2|Parent Canvas|1|Boxes|list|0|G
+#en Indent|integer|3|Gen Main|integer|1|Gen Component Setup|integer|1|G
+#en Init Dialog|integer|1|Gen Initially|integer|1|Dialog Struct|class|C
+#Dialog|4|Min Width|null|Min Height|null|Ticker Rate|null|Attribs|list|
+#0|Name|string|Untitled|Width|integer|644|Height|integer|399|Items|list
+#|1|class|CanvasTable|28|Parent Canvas|1|Name|string|table_1|Class Name
+#|string|Table|Import Name|string|gui|X Fix|null|Y Fix|null|W Fix|null|
+#H Fix|null|W Default|null|H Default|null|X Spec|integer|10|Y Spec|inte
+#ger|10|W Spec|integer|277|H Spec|integer|153|X Align|string|l|Y Align|
+#string|t|Is shaded|null|Is Button Subclass|null|Draw Border|null|Attri
+#bs|list|0|Tooltip|null|Accel|null|Event Handlers|null|Class Variable|i
+#nteger|1|Parent Component|1|Select One|null|Select Many|null|Columns|l
+#ist|0|Initial Focus|null|Event Handlers|null|

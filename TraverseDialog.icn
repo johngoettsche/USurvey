@@ -1,0 +1,71 @@
+
+class TraverseNew : Dialog()
+	local 
+		traverse,
+		labelName,
+		textFieldName,
+		cancel,
+		ok
+		
+	method createTraverse(ev)
+		traverse := Traverse(textFieldName.get_contents())
+		put(traverses, traverse)
+		currentTraverse := traverses[*traverses]
+		
+		# traverseDialog
+		
+	end
+
+	method component_setup()
+		self.set_attribs("size=650,250","bg=light gray", "font=serif", "resize=on")
+		
+		labelName := Label("label=Traverse Name:", "pos=20, 20", "align=l,t")
+		add(labelName)
+		textFieldName := TextField("pos=120, 20", "size=300", "draw_border=t")
+		textFieldName.set_contents(@travName)
+		add(textFieldID)
+		
+		cancel := TextButton("label=Cancel", "pos=33%, 230", "align=c,c")
+		cancel.connect(self, "dispose", ACTION_EVENT)
+		add(cancel)
+
+		ok := TextButton("label=Ok", "pos=67%, 230", "align=c,c")
+		ok.connect(self, "createTraverse", ACTION_EVENT)
+		add(ok)
+	end
+end
+
+class TraverseDialog : Dialog()
+	local 
+		instructions,
+		thisTraverse,
+		
+		cancel,
+		ok
+		
+	method stateTraverse(ev)
+		currentTraverse.instructions := instructions
+		dispose()
+	end
+	
+	method component_setup()
+		
+		thisTraverse := currentTraverse
+		instructions := thisTraverse.instructions
+		
+		self.set_attribs("size=650,250","bg=light gray", "font=serif", "resize=on")
+		
+		
+		
+		cancel := TextButton("label=Cancel", "pos=33%, 230", "align=c,c")
+		cancel.connect(self, "dispose", ACTION_EVENT)
+		add(cancel)
+
+		ok := TextButton("label=Ok", "pos=67%, 230", "align=c,c")
+		ok.connect(self, "saveTraverse", ACTION_EVENT)
+		add(ok)
+	end
+	
+	initially
+      self.Dialog.initially()
+end

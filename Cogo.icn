@@ -157,7 +157,6 @@ procedure pointInverse(pt1, pt2)
 			if diffN < 0 then rad -:= (&pi / 2)
 			else rad +:= (&pi / 2)
 		}
-		write(rad)
 	} 	
 	else {
 		rad := &pi / 2

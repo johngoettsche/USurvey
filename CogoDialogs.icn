@@ -123,7 +123,5 @@ class CogoMeasureBetweenPoints : Dialog()
 		ok := TextButton("label=Ok", "pos=50%, 200", "align=c,c")
 		ok.connect(self, "dispose", ACTION_EVENT)
 		add(ok)
-		
-		#findPointFromList(pts, pt)
 	end
 end

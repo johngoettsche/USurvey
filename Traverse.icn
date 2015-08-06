@@ -1,0 +1,100 @@
+class Traverse(travName, instructions)
+
+initially(tn)
+	travName := tn
+	instructions := []
+end
+
+class occupation(point, hi, backsight, backDirection)
+	method setBacksightPoint(pt, h)
+		backsight := Backsight(pt, h)
+		backDirection := pointInverse(point, backsight.point)
+	end
+	
+	method setBackByBearing(bearing)
+		rad := bearingToRadians(bearing)
+		backDirection := DistDir(0.0, rad)
+	end
+	
+	method setBackByAzimuth(azimuth)
+		rad := azimuthToRadians(azimuth)
+		backDirection := DistDir(0.0, rad)
+	end
+
+initially(p, h)
+	point := p
+	point.ptType ||:= "Control"
+	hi := h
+	backsight := &null
+end
+
+class Backsight(point, ht)
+
+initially(p, h)
+	point := p
+	point.ptType ||:= "Control"
+	ht := h
+end
+
+class turnedAngle(style, rodHeight, hzOffset, vertOffset, targetAdjust, 
+		foresightPoint, horizontalAngle, horizontalDistance, verticalDistance, 
+		foresightDirection, occupation, shots)
+	method checkBacksight(s)
+		
+	end
+
+	method sideShot(s)
+		foresightPoint := Point("Side Shot")
+		put(shots, s)
+		horizontalDistance := shots[1].slopeDistance * cos(zenith)
+		verticalDistance := shots[1].slopeDistance * sin(zenith)
+		foresightDirection := occupation.backDirection + shots[1].hzAngle
+		while foresightDirection > (2 * &pi) do foresightDirection -:= (2 * &pi)
+		while foresightDirection < 0 do foresightDirection +:= (2 * &pi)
+	end
+	
+	method singleShot(shotList)
+		shots := shotList
+		errorCheck := checkBacksight(shots[1])
+		case errorCheck of:
+		0 : {
+			horizontalDistance := shots[2].slopeDistance * cos(zenith)
+			verticalDistance := shots[2].slopeDistance * sin(zenith)
+			foresightDirection := occupation.backDirection - shots[1].hzAngle + shots[2].hzAngle
+			while foresightDirection > (2 * &pi) do foresightDirection -:= (2 * &pi)
+			while foresightDirection < 0 do foresightDirection +:= (2 * &pi)
+		}
+		default : {
+		
+		}
+	end
+#Point(id, n, e, el, desc, ptType, parcels, boundaries)	
+	method calculateForesightPoint()
+	#need to add ajustments for hzOffset
+		foresightPoint.n := occupation.point.n + (horizontalDistance + targetAdjust) * 
+				sin(foresightDirection)
+		foresightPoint.e := occupation.point.e + (horizontalDistance + targetAdjust) * 
+				cos(foresightDirection)
+		foresightPoint.el := occupation.point.el + verticalDistance + occupation.point.hi - 
+				rodHeight + vertOffset
+	end
+
+initially(st, occ, rh, ho, vo, ta, fsp)
+	shots := []
+	style := st
+	occupation := occ
+	rodHeight := rh
+	hzOffset := ho
+	vertOffset := vo
+	targetAdjust := ta
+	foresightPoint := Point("Turned")
+	foresightPoint.id := fsp
+end
+
+class Shot(hzAngle, zenith, slopeDistance)
+
+initially(hz, z, sd)
+	hzAngle := hz
+	zenith := z
+	slopeDistance := sd
+end
