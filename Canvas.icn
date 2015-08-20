@@ -1,0 +1,78 @@
+import gui
+$include "guih.icn"
+
+class Canvas : Component(
+		w, h,
+		scale, objectScale, cN, cE,
+		maxN, maxE, minN, minE, rootN, rootE,
+		tempWin
+	)
+	
+	method displaySettings()
+		if *points > 0 then {
+			maxN := minN := points[1].n
+			maxE := minE := points[1].e
+			every p := !points do {
+				if p.n > maxN then maxN := p.n
+				if p.e > maxE then maxE := p.e
+				if p.n < minN then minN := p.n
+				if p.e < minE then minE := p.e
+			}
+		}
+	end
+	
+	method drawPoint(cw, p)
+		local xp, yp, poly
+		poly := [cw]
+		every pt := !tri do {
+			xp := ((p.e - rootE) / scale) + (pt[1] - 5)
+			put(poly, xp)
+			yp := ((rootN - p.n) / scale) + (pt[2] - 5)
+			put(poly, yp)
+		}
+		p.ptType ? {
+			if tab(many("Coordinate")) then WAttrib(cw, "fg=red")
+			else if tab(many("Control")) then WAttrib(cw, "fg=blue")
+		}
+		DrawPolygon !poly
+		GotoXY(xp + 9 * objectScale, yp - 9 * objectScale)
+		write(cw, p.id)
+	end
+	
+	method display()
+		if /tempWin then {
+			tempWin := WOpen("canvas=hidden", "size=" || w || "," || h)
+			CopyArea(self.get_parent_win(), tempWin, x, y, w, h, 0, 0)
+		}
+		cw := Clone(self.cwin)
+		initDisplay()
+		displaySettings()
+		if *points > 0 then
+			every p := !points do 
+				drawPoint(cw, p)
+		#draw stuff
+		#Fg(cw, "blue")
+		#EraseRectangle(cw, x, y, w, h)
+		#FillRectangle(cw, 5, 50, 20, 10)
+		#Fg(cw, "red")
+		#DrawRectangle(cw, 50,50, 20, 20)
+	end
+	
+	method set_one(attr, val)
+		case attr of {
+			default : self.Component.set_one(attr, val)
+		}
+	end
+	
+	method initDisplay()
+		scale := SCALE_BASE
+		rootN := N_BASE + (h / 2) * scale
+		rootE := E_BASE - (w / 2) * scale
+		write(rootN, " : ", rootE)
+	end
+	
+initially(a[])
+	self.Component.initially()
+	set_fields(a)
+	objectScale := 1
+end

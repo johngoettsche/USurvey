@@ -14,9 +14,9 @@ class Point(id, n, e, el, desc, ptType, parcels, boundaries)
 
 initially(ptype)
 	id := ""
-	n := 5000.000
-	e := 10000.000
-	el := 100.000
+	n := N_BASE
+	e := E_BASE
+	el := EL_BASE
 	disc := ""
 	ptType := ptype
 	parcels := []

@@ -1,3 +1,28 @@
+$define N_BASE 5000
+$define E_BASE 10000
+$define EL_BASE 100
+
+$define SCALE_BASE 10
+
 procedure settings(item, x, y)
 	item.set_attribs("bg=white", "font=serif", "resize=off", "fg=black", "border=blue", "size=" || x || ", " || y)
+end
+
+procedure makeShapes(obj)
+	local 
+		poly,
+		line,
+		coordinate
+	
+	infile := open(obj || ".dat", "r")
+	poly := []
+	every line := !infile do {
+		coordinate := []
+		line ? {
+			while tab(upto(&digits)) do 
+				put(coordinate, integer(tab(many(&digits))))
+		}
+		put(poly, coordinate)
+	}
+	return poly
 end

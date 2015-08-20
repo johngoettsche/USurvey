@@ -1,3 +1,5 @@
+import gui
+$include "guih.icn"
 
 class TraverseNew : Dialog()
 	local 

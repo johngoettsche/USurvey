@@ -7,7 +7,10 @@ global
 	idLabel,
 	points,
 	traverses,
-	currentTraverse
+	currentTraverse,
+	
+#shapes	
+	tri
 	
 procedure init()
 	idLabel := ""
@@ -15,9 +18,11 @@ procedure init()
 	travName := create("Trav_" || seq())
 	points := []
 	traverses := []
+	
+	tri := makeShapes("tri")
 end
 
-class Untitled : Dialog(menuFile, menuFileExit, menuFileNew, menuFileOpen, menuFileSave, menuParcels, menuPoints, menuPointsList, menuPointsListAll, menuPointsNew, menuTraverse, menu_bar_1, text_menu_item_5, menuCogo, menuCogoMeasure, menuCogoMeasurementsBetweenPoints, menuTraverseNew)
+class Untitled : Dialog(menuFile, menuFileExit, menuFileNew, menuFileOpen, menuFileSave, menuParcels, menuPoints, menuPointsList, menuPointsListAll, menuPointsNew, menuTraverse, menu_bar_1, text_menu_item_5, menuCogo, menuCogoMeasure, menuCogoMeasurementsBetweenPoints, menuTraverseNew, canvas)
    method component_setup()
       self.setup()
    end
@@ -50,6 +55,7 @@ class Untitled : Dialog(menuFile, menuFileExit, menuFileNew, menuFileOpen, menuF
 
    method on_menuPointsNew(ev)
 		NewPoint().show_modal()
+		canvas.display()
    end
 
    method on_menuCogoMeasurementsBetweenPoints(ev)
@@ -121,6 +127,10 @@ class Untitled : Dialog(menuFile, menuFileExit, menuFileNew, menuFileOpen, menuF
       menuParcels.set_label("Parcels")
       menu_bar_1.add(menuParcels)
       self.add(menu_bar_1)
+		
+		canvas := Canvas("size=300,400")
+		canvas.set_pos("5", "40")
+		self.add(canvas)
    end
 
    initially
@@ -132,6 +142,7 @@ procedure main()
 		welcome,
 		d
 		
+	init()	
 	welcome := Welcome()
 	welcome.show_modal()
    d := Untitled()

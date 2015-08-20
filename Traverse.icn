@@ -40,7 +40,7 @@ class turnedAngle(style, rodHeight, hzOffset, vertOffset, targetAdjust,
 		foresightPoint, horizontalAngle, horizontalDistance, verticalDistance, 
 		foresightDirection, occupation, shots)
 	method checkBacksight(s)
-		
+		return 0
 	end
 
 	method sideShot(s)
@@ -56,16 +56,17 @@ class turnedAngle(style, rodHeight, hzOffset, vertOffset, targetAdjust,
 	method singleShot(shotList)
 		shots := shotList
 		errorCheck := checkBacksight(shots[1])
-		case errorCheck of:
-		0 : {
-			horizontalDistance := shots[2].slopeDistance * cos(zenith)
-			verticalDistance := shots[2].slopeDistance * sin(zenith)
-			foresightDirection := occupation.backDirection - shots[1].hzAngle + shots[2].hzAngle
-			while foresightDirection > (2 * &pi) do foresightDirection -:= (2 * &pi)
-			while foresightDirection < 0 do foresightDirection +:= (2 * &pi)
-		}
-		default : {
+		case errorCheck of {
+			0 : {
+				horizontalDistance := shots[2].slopeDistance * cos(zenith)
+				verticalDistance := shots[2].slopeDistance * sin(zenith)
+				foresightDirection := occupation.backDirection - shots[1].hzAngle + shots[2].hzAngle
+				while foresightDirection > (2 * &pi) do foresightDirection -:= (2 * &pi)
+				while foresightDirection < 0 do foresightDirection +:= (2 * &pi)
+			}
+			default : {
 		
+			}
 		}
 	end
 #Point(id, n, e, el, desc, ptType, parcels, boundaries)	
