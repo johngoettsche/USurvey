@@ -1,14 +1,23 @@
 import gui
 $include "guih.icn"
 
+global
+	foreground,
+	FG,
+	background,
+	BG
+
 class Canvas : Component(
-		w, h,
+		w, h, 
 		scale, objectScale, cN, cE,
 		maxN, maxE, minN, minE, rootN, rootE,
 		tempWin
 	)
 	
-	method displaySettings()
+	method displaySettings(cw)
+		Bg(cw, BG)
+		Fg(cw, FG)
+		
 		if *points > 0 then {
 			maxN := minN := points[1].n
 			maxE := minE := points[1].e
@@ -21,41 +30,48 @@ class Canvas : Component(
 		}
 	end
 	
-	method drawPoint(cw, p)
+	method drawSymbol(cw, symbol, p)
 		local xp, yp, poly
 		poly := [cw]
-		every pt := !tri do {
-			xp := ((p.e - rootE) / scale) + (pt[1] - 5)
+		every pt := !symbol do {
+			xp := ((p.e - rootE) / scale) + (pt[1] - 5) * objectScale
 			put(poly, xp)
-			yp := ((rootN - p.n) / scale) + (pt[2] - 5)
+			yp := ((rootN - p.n) / scale) + (pt[2] - 5) * objectScale + V_SHIFT
 			put(poly, yp)
 		}
-		p.ptType ? {
+		p.ptType ? {  #needs to be revised
 			if tab(many("Coordinate")) then WAttrib(cw, "fg=red")
 			else if tab(many("Control")) then WAttrib(cw, "fg=blue")
+			else if tab(many("Side Shot")) then WAttrib(cw, "fg=light blue")
 		}
 		DrawPolygon !poly
-		GotoXY(xp + 9 * objectScale, yp - 9 * objectScale)
+		return [xp + 5 * objectScale, yp - 5 * objectScale]
+	end
+	
+	method drawPoint(cw, p)
+		local coord
+	
+		coord := drawSymbol(cw, tri, p)
+		GotoXY(coord[1] + 4 * objectScale, coord[2] - 4 * objectScale)
 		write(cw, p.id)
+		WAttrib(cw, "fg=" || FG)
 	end
 	
 	method display()
+		
 		if /tempWin then {
 			tempWin := WOpen("canvas=hidden", "size=" || w || "," || h)
 			CopyArea(self.get_parent_win(), tempWin, x, y, w, h, 0, 0)
 		}
 		cw := Clone(self.cwin)
+		EraseRectangle(cw, x, y + V_SHIFT, w, h)
 		initDisplay()
-		displaySettings()
+		displaySettings(cw)
 		if *points > 0 then
 			every p := !points do 
 				drawPoint(cw, p)
-		#draw stuff
-		#Fg(cw, "blue")
-		#EraseRectangle(cw, x, y, w, h)
-		#FillRectangle(cw, 5, 50, 20, 10)
-		#Fg(cw, "red")
-		#DrawRectangle(cw, 50,50, 20, 20)
+			
+		DrawRectangle(cw, 5, V_SHIFT , w - 10, h - V_SHIFT)
 	end
 	
 	method set_one(attr, val)
@@ -68,10 +84,11 @@ class Canvas : Component(
 		scale := SCALE_BASE
 		rootN := N_BASE + (h / 2) * scale
 		rootE := E_BASE - (w / 2) * scale
-		write(rootN, " : ", rootE)
 	end
 	
 initially(a[])
+	FG := "black"
+	BG := "white"
 	self.Component.initially()
 	set_fields(a)
 	objectScale := 1

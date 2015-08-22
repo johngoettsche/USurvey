@@ -1,3 +1,16 @@
+procedure getPointNo(point)
+	local
+		p,
+		pt
+		
+	p := 1
+	every pt := !points do {
+		if point.id == pt.id then return p
+		else p +:= 1
+	}
+	return &null
+end
+
 procedure txtSizeRt(size, txt)
 	local
 		l,

@@ -1,0 +1,29 @@
+import gui
+$include "guih.icn"
+
+class TraverseNew : Dialog(parcelEditList)
+	method component_setup()
+		thisParcel := Parcel()
+		self.set_attribs("size=650,250","bg=light gray", "font=serif", "resize=on")
+		
+		ptList := []
+		parcelEditList := EditList()
+		parcelEditList.set_is_editable()
+		parcelEditList.set_contents(ptList)
+		parcelEditList.connect()
+		
+		self.add(parcelEditList)
+		
+		
+		cancel := TextButton("label=Cancel", "pos=33%, 230", "align=c,c")
+		cancel.connect(self, "dispose", ACTION_EVENT)
+		add(cancel)
+
+		ok := TextButton("label=Ok", "pos=67%, 230", "align=c,c")
+		ok.connect(self, "saveTraverse", ACTION_EVENT)
+		add(ok)
+	end
+	
+	initially
+      self.Dialog.initially()
+end

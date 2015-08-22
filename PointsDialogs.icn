@@ -1,0 +1,199 @@
+import gui
+$include "guih.icn"
+
+class NewPoint : Dialog()
+	local 
+		textFieldID,
+		textFieldN,
+		textFieldE,
+		textFieldEl,
+		textFieldDesc
+	
+	method savePoint()
+		newPoint := Point("Coordinate")
+		newPoint.id := textFieldID.get_contents()
+		newPoint.n := textFieldN.get_contents()
+		newPoint.e := textFieldE.get_contents()
+		newPoint.el := textFieldEl.get_contents()
+		newPoint.desc := textFieldDesc.get_contents()
+		put(points, newPoint)
+		dispose()
+	end
+	
+	method component_setup()
+		local 
+			labelID,
+			labelN,
+			labelE,
+			labelEl,
+			labelDesc,
+			cancel,
+			ok,
+			txt
+		
+		self.set_attribs("size=420,250", "bg=light gray", "font=serif", "resize=on")
+		
+		labelID := Label("label=Point ID:", "pos=20, 20", "align=l,t")
+		add(labelID)
+		textFieldID := TextField("pos=120, 20", "size=200", "draw_border=t")
+		textFieldID.set_contents(@ids)
+		add(textFieldID)
+
+		labelN := Label("label=Northing: ", "pos=20, 60", "align=l,t")
+		add(labelN)
+		textFieldN := TextField("pos=120, 60", "size=200", "draw_border=t")
+		textFieldN.set_contents("5000.00")
+		add(textFieldN)
+
+		labelE := Label("label=Easting: ", "pos=20, 100", "align=l,t")
+		add(labelE)
+		textFieldE := TextField("pos=120, 100", "size=200", "draw_border=t")
+		textFieldE.set_contents("10000.00")
+		add(textFieldE)
+
+		labelEl := Label("label=Elevation:", "pos=20, 140", "align=l,t")
+		add(labelEl)
+		textFieldEl := TextField("pos=120, 140", "size=200", "draw_border=t")
+		textFieldEl.set_contents("100.00")
+		add(textFieldEl)
+
+		labelDesc := Label("label=Description: ", "pos=20, 180", "align=l,t")
+		add(labelDesc)
+		textFieldDesc := TextField("pos=120, 180", "size=200", "draw_border=t")
+		textFieldDesc.set_contents("")
+		add(textFieldDesc)
+
+		cancel := TextButton("label=Cancel", "pos=33%, 230", "align=c,c")
+		cancel.connect(self, "dispose", ACTION_EVENT)
+		add(cancel)
+
+		ok := TextButton("label=Ok", "pos=67%, 230", "align=c,c")
+		ok.connect(self, "savePoint", ACTION_EVENT)
+		add(ok)
+	end
+end
+		
+class EditPoint : Dialog()
+	local 
+		listID,
+		textFieldN,
+		textFieldE,
+		textFieldEl,
+		textFieldDesc
+		
+	method handlePointSelect(ev)
+		local 
+			p
+		
+		p := points[listID.get_selection()]
+		if \p then {
+			textFieldN.set_contents(p.n)
+			textFieldE.set_contents(p.e)
+			textFieldEl.set_contents(p.el)
+			textFieldDesc.set_contents(p.desc)
+		}
+	end
+	
+	method savePoint()
+		local 
+			p,
+			ptNo
+		
+		p := points[listID.get_selection()]
+		ptNo := getPointNo(p)
+		if \p then {
+			p.ptType ||:= "Edited"
+			p.n := textFieldN.get_contents()
+			p.e := textFieldE.get_contents()
+			p.el := textFieldEl.get_contents()
+			p.desc := textFieldDesc.get_contents()
+			delete(points, ptNo)
+			insert(points, ptNo, p)
+		}
+		dispose()
+	end
+	
+	method component_setup()
+		local 
+			labelN,
+			labelE,
+			labelEl,
+			labelDesc,
+			cancel,
+			ok,
+			txt,
+			l,
+			p
+		
+		self.set_attribs("size=420,250", "bg=light gray", "font=serif", "resize=on")
+		
+		l := []
+		every p := !points do put(l, p.id)
+		listID := List("pos=20, 20", "align=l,t", "size=200", "draw_border=t")
+		listID.set_selection_list(l)
+		listID.connect(self, "handlePointSelect", SELECTION_CHANGED_EVENT)
+		add(listID)
+
+		labelN := Label("label=Northing: ", "pos=20, 60", "align=l,t")
+		add(labelN)
+		textFieldN := TextField("pos=120, 60", "size=200", "draw_border=t")
+		textFieldN.set_contents("5000.00")
+		add(textFieldN)
+
+		labelE := Label("label=Easting: ", "pos=20, 100", "align=l,t")
+		add(labelE)
+		textFieldE := TextField("pos=120, 100", "size=200", "draw_border=t")
+		textFieldE.set_contents("10000.00")
+		add(textFieldE)
+
+		labelEl := Label("label=Elevation:", "pos=20, 140", "align=l,t")
+		add(labelEl)
+		textFieldEl := TextField("pos=120, 140", "size=200", "draw_border=t")
+		textFieldEl.set_contents("100.00")
+		add(textFieldEl)
+
+		labelDesc := Label("label=Description: ", "pos=20, 180", "align=l,t")
+		add(labelDesc)
+		textFieldDesc := TextField("pos=120, 180", "size=200", "draw_border=t")
+		textFieldDesc.set_contents("")
+		add(textFieldDesc)
+
+		cancel := TextButton("label=Cancel", "pos=33%, 230", "align=c,c")
+		cancel.connect(self, "dispose", ACTION_EVENT)
+		add(cancel)
+
+		ok := TextButton("label=Ok", "pos=67%, 230", "align=c,c")
+		ok.connect(self, "savePoint", ACTION_EVENT)
+		add(ok)
+	end
+end
+
+class PointList : Dialog()
+	method component_setup()
+		local 
+			ok,
+			line,
+			txt
+			
+		self.set_attribs("size=420,250", "bg=light gray", "font=serif", "resize=on")		
+		
+		txt := []
+		line := txtSizeLt(10, "Point ID") || txtSizeLt(16, "Northing") || txtSizeLt(16, "Easting") || txtSizeLt(16, "Elevation") || txtSizeLt(22, "Description")
+		put(txt, line)
+		every point := !points do {
+			line := txtSizeRt(10, point.id) || txtSizeRt(16, point.n) || txtSizeRt(16, point.e) || txtSizeRt(16, point.el) || "  " || txtSizeLt(0, point.desc)
+			write(line)
+			put(txt, line)
+		}
+
+		textList := TextList()
+		textList.set_pos("10", "10")
+		textList.set_size("400", "200")
+		textList.set_contents(txt)
+		add(textList)
+
+		ok := TextButton("label=Ok", "pos=50%, 230", "align=c,c")
+		ok.connect(self, "dispose", ACTION_EVENT)
+		add(ok)
+	end
+end

@@ -8,6 +8,10 @@ global
 	points,
 	traverses,
 	currentTraverse,
+	parcels,
+	currentParcel,
+	parcelNameNum,
+	parcelNameAlpha
 	
 #shapes	
 	tri
@@ -18,11 +22,14 @@ procedure init()
 	travName := create("Trav_" || seq())
 	points := []
 	traverses := []
-	
+	parcels := []
+	parcelNameNum := create("Parcel_" || seq())
+	parcelNameAlpha := create("Parcel_" || !&ucase )
 	tri := makeShapes("tri")
 end
 
-class Untitled : Dialog(menuFile, menuFileExit, menuFileNew, menuFileOpen, menuFileSave, menuParcels, menuPoints, menuPointsList, menuPointsListAll, menuPointsNew, menuTraverse, menu_bar_1, text_menu_item_5, menuCogo, menuCogoMeasure, menuCogoMeasurementsBetweenPoints, menuTraverseNew, canvas)
+class Untitled : Dialog(menuFile, menuFileExit, menuFileNew, menuFileOpen, menuFileSave, menuParcels, menuPoints, menuPointsList, menuPointsListAll, menuPointsNew, menuTraverse, menu_bar_1, text_menu_item_5, menuCogo, menuCogoMeasure, menuCogoMeasurementsBetweenPoints, menuTraverseNew, canvas, menuPointsEdit)
+
    method component_setup()
       self.setup()
    end
@@ -49,13 +56,18 @@ class Untitled : Dialog(menuFile, menuFileExit, menuFileNew, menuFileOpen, menuF
    method on_menuFileSave(ev)
    end
 
-   method on_menuPointsListAll(ev)
-		PointList().show_modal()
-   end
-
    method on_menuPointsNew(ev)
 		NewPoint().show_modal()
 		canvas.display()
+   end
+	
+   method on_menuPointsEdit(ev)
+		EditPoint().show_modal()
+		canvas.display()
+   end
+	
+	method on_menuPointsListAll(ev)
+		PointList().show_modal()
    end
 
    method on_menuCogoMeasurementsBetweenPoints(ev)
@@ -65,9 +77,15 @@ class Untitled : Dialog(menuFile, menuFileExit, menuFileNew, menuFileOpen, menuF
    method on_menuTraverseNew(ev)
 		TraverseNew().show_modal()
    end
+	
+	method on_menuParcelsNew(ev)
+		
+	end
+
 
    method setup()
-      self.set_attribs("size=644,399")
+      self.set_attribs("size=800,600")
+		
       menu_bar_1 := MenuBar()
       menu_bar_1.set_pos("0", "0")
       menuFile := Menu()
@@ -89,12 +107,17 @@ class Untitled : Dialog(menuFile, menuFileExit, menuFileNew, menuFileOpen, menuF
       menuFileExit.connect(self, "on_menuFileExit", ACTION_EVENT)
       menuFile.add(menuFileExit)
       menu_bar_1.add(menuFile)
+		
       menuPoints := Menu()
       menuPoints.set_label("Points")
       menuPointsNew := TextMenuItem()
       menuPointsNew.set_label("New")
       menuPointsNew.connect(self, "on_menuPointsNew", ACTION_EVENT)
       menuPoints.add(menuPointsNew)
+      menuPointsEdit := TextMenuItem()
+      menuPointsEdit.set_label("Edit")
+      menuPointsEdit.connect(self, "on_menuPointsEdit", ACTION_EVENT)
+      menuPoints.add(menuPointsEdit)
       menuPointsList := Menu()
       menuPointsList.set_label("List")
       menuPointsListAll := TextMenuItem()
@@ -106,6 +129,7 @@ class Untitled : Dialog(menuFile, menuFileExit, menuFileNew, menuFileOpen, menuF
       text_menu_item_5.set_label("Edit me")
       menuPoints.add(text_menu_item_5)
       menu_bar_1.add(menuPoints)
+		
       menuCogo := Menu()
       menuCogo.set_label("COGO")
       menuCogoMeasure := Menu()
@@ -116,6 +140,7 @@ class Untitled : Dialog(menuFile, menuFileExit, menuFileNew, menuFileOpen, menuF
       menuCogoMeasure.add(menuCogoMeasurementsBetweenPoints)
       menuCogo.add(menuCogoMeasure)
       menu_bar_1.add(menuCogo)
+		
       menuTraverse := Menu()
       menuTraverse.set_label("Traverse")
       menuTraverseNew := TextMenuItem()
@@ -123,13 +148,20 @@ class Untitled : Dialog(menuFile, menuFileExit, menuFileNew, menuFileOpen, menuF
       menuTraverseNew.connect(self, "on_menuTraverseNew", ACTION_EVENT)
       menuTraverse.add(menuTraverseNew)
       menu_bar_1.add(menuTraverse)
+		
       menuParcels := Menu()
       menuParcels.set_label("Parcels")
+      menuParcelsNew := TextMenuItem()
+      menuParcelsNew.set_label("New")
+      menuParcelsNew.connect(self, "on_menuParcelsNew", ACTION_EVENT)
+      menuParcels.add(menuParcelsNew)
+		
       menu_bar_1.add(menuParcels)
+		
       self.add(menu_bar_1)
 		
-		canvas := Canvas("size=300,400")
-		canvas.set_pos("5", "40")
+		canvas := Canvas("size=780,545", "align=l,t")
+		canvas.set_pos("5", "30")
 		self.add(canvas)
    end
 
@@ -148,112 +180,3 @@ procedure main()
    d := Untitled()
    d.show_modal()
 end
-
-### Ivib-v2 layout ##
-#class|Canvas|17|Name Table|table|integer|0|3|string|menu|integer|7|str
-#ing|menu_bar|integer|1|string|text_menu_item|integer|10|SuperClass Nam
-#e|string|Dialog|Import Name|string|gui|Button Groups|class|ButtonGroup
-#Set|2|Parent Canvas|1|Boxes|list|0|Checkbox Groups|class|CheckBoxGroup
-#Set|2|Parent Canvas|1|Boxes|list|0|Gen Indent|integer|3|Gen Main|integ
-#er|1|Gen Component Setup|integer|1|Gen Init Dialog|integer|1|Gen Initi
-#ally|integer|1|Dialog Struct|class|CDialog|4|Min Width|null|Min Height
-#|null|Ticker Rate|null|Attribs|list|0|Name|string|Untitled|Width|integ
-#er|644|Height|integer|399|Items|list|1|class|CanvasMenuBar|26|Parent C
-#anvas|1|Name|string|menu_bar_1|Class Name|string|MenuBar|Import Name|s
-#tring|gui|X Fix|null|Y Fix|null|W Fix|null|H Fix|null|W Default|intege
-#r|1|H Default|integer|1|X Spec|string|0|Y Spec|string|0|W Spec|string|
-#100%|H Spec|integer|24|X Align|string|l|Y Align|string|t|Is shaded|nul
-#l|Is Button Subclass|null|Draw Border|null|Attribs|list|0|Tooltip|null
-#|Accel|null|Event Handlers|list|0|Class Variable|integer|1|Parent Comp
-#onent|1|Menus|list|5|class|CanvasMenu|17|Name|string|menuFile|Class Na
-#me|string|Menu|Import Name|string|gui|Accel|null|Label|string|File|Lab
-#el Left|null|Label Right|null|Is shaded|null|Img Left|null|Img Left Wi
-#dth|null|Img Left Height|null|Img Right|string|9,c1,0~~~~~~~~000~~~~~~
-#00000~~~~0000000~~0000000000000000~~00000~~~~000~~~~~~0~~~~~~~~|Img Ri
-#ght Width|integer|9|Img Right Height|integer|9|Event Method|null|Class
-# Variable|integer|1|Children|list|4|class|CanvasTextMenuItem|16|Name|s
-#tring|menuFileNew|Class Name|string|TextMenuItem|Import Name|string|gu
-#i|Accel|null|Label|string|New|Label Left|null|Label Right|null|Is shad
-#ed|null|Img Left|null|Img Left Width|null|Img Left Height|null|Img Rig
-#ht|null|Img Right Width|null|Img Right Height|null|Event Method|string
-#|on_menuFileNew|Class Variable|integer|1|class|CanvasTextMenuItem|16|N
-#ame|string|menuFileOpen|Class Name|string|TextMenuItem|Import Name|str
-#ing|gui|Accel|null|Label|string|Open|Label Left|null|Label Right|null|
-#Is shaded|null|Img Left|null|Img Left Width|null|Img Left Height|null|
-#Img Right|null|Img Right Width|null|Img Right Height|null|Event Method
-#|string|on_menuFileOpen|Class Variable|integer|1|class|CanvasTextMenuI
-#tem|16|Name|string|menuFileSave|Class Name|string|TextMenuItem|Import 
-#Name|string|gui|Accel|null|Label|string|Save|Label Left|null|Label Rig
-#ht|null|Is shaded|null|Img Left|null|Img Left Width|null|Img Left Heig
-#ht|null|Img Right|null|Img Right Width|null|Img Right Height|null|Even
-#t Method|string|on_menuFileSave|Class Variable|integer|1|class|CanvasT
-#extMenuItem|16|Name|string|menuFileExit|Class Name|string|TextMenuItem
-#|Import Name|string|gui|Accel|null|Label|string|Exit|Label Left|null|L
-#abel Right|null|Is shaded|null|Img Left|null|Img Left Width|null|Img L
-#eft Height|null|Img Right|null|Img Right Width|null|Img Right Height|n
-#ull|Event Method|string|on_menuFileExit|Class Variable|integer|1|class
-#|CanvasMenu|17|Name|string|menuPoints|Class Name|string|Menu|Import Na
-#me|string|gui|Accel|null|Label|string|Points|Label Left|null|Label Rig
-#ht|null|Is shaded|null|Img Left|null|Img Left Width|null|Img Left Heig
-#ht|null|Img Right|string|9,c1,0~~~~~~~~000~~~~~~00000~~~~0000000~~0000
-#000000000000~~00000~~~~000~~~~~~0~~~~~~~~|Img Right Width|integer|9|Im
-#g Right Height|integer|9|Event Method|null|Class Variable|integer|1|Ch
-#ildren|list|3|class|CanvasTextMenuItem|16|Name|string|menuPointsNew|Cl
-#ass Name|string|TextMenuItem|Import Name|string|gui|Accel|null|Label|s
-#tring|New|Label Left|null|Label Right|null|Is shaded|null|Img Left|nul
-#l|Img Left Width|null|Img Left Height|null|Img Right|null|Img Right Wi
-#dth|null|Img Right Height|null|Event Method|string|on_menuPointsNew|Cl
-#ass Variable|integer|1|class|CanvasMenu|17|Name|string|menuPointsList|
-#Class Name|string|Menu|Import Name|string|gui|Accel|null|Label|string|
-#List|Label Left|null|Label Right|null|Is shaded|null|Img Left|null|Img
-# Left Width|null|Img Left Height|null|Img Right|string|9,c1,0~~~~~~~~0
-#00~~~~~~00000~~~~0000000~~0000000000000000~~00000~~~~000~~~~~~0~~~~~~~
-#~|Img Right Width|integer|9|Img Right Height|integer|9|Event Method|nu
-#ll|Class Variable|integer|1|Children|list|1|class|CanvasTextMenuItem|1
-#6|Name|string|menuPointsListAll|Class Name|string|TextMenuItem|Import 
-#Name|string|gui|Accel|null|Label|string|All|Label Left|null|Label Righ
-#t|null|Is shaded|null|Img Left|null|Img Left Width|null|Img Left Heigh
-#t|null|Img Right|null|Img Right Width|null|Img Right Height|null|Event
-# Method|string|on_menuPointsListAll|Class Variable|integer|1|class|Can
-#vasTextMenuItem|16|Name|string|text_menu_item_5|Class Name|string|Text
-#MenuItem|Import Name|string|gui|Accel|null|Label|string|Edit me|Label 
-#Left|null|Label Right|null|Is shaded|null|Img Left|null|Img Left Width
-#|null|Img Left Height|null|Img Right|null|Img Right Width|null|Img Rig
-#ht Height|null|Event Method|null|Class Variable|integer|1|class|Canvas
-#Menu|17|Name|string|menuCogo|Class Name|string|Menu|Import Name|string
-#|gui|Accel|null|Label|string|COGO|Label Left|null|Label Right|null|Is 
-#shaded|null|Img Left|null|Img Left Width|null|Img Left Height|null|Img
-# Right|string|9,c1,0~~~~~~~~000~~~~~~00000~~~~0000000~~000000000000000
-#0~~00000~~~~000~~~~~~0~~~~~~~~|Img Right Width|integer|9|Img Right Hei
-#ght|integer|9|Event Method|null|Class Variable|integer|1|Children|list
-#|1|class|CanvasMenu|17|Name|string|menuCogoMeasure|Class Name|string|M
-#enu|Import Name|string|gui|Accel|null|Label|string|Measurements|Label 
-#Left|null|Label Right|null|Is shaded|null|Img Left|null|Img Left Width
-#|null|Img Left Height|null|Img Right|string|9,c1,0~~~~~~~~000~~~~~~000
-#00~~~~0000000~~0000000000000000~~00000~~~~000~~~~~~0~~~~~~~~|Img Right
-# Width|integer|9|Img Right Height|integer|9|Event Method|null|Class Va
-#riable|integer|1|Children|list|1|class|CanvasTextMenuItem|16|Name|stri
-#ng|menuCogoMeasurementsBetweenPoints|Class Name|string|TextMenuItem|Im
-#port Name|string|gui|Accel|null|Label|string|Between Points|Label Left
-#|null|Label Right|null|Is shaded|null|Img Left|null|Img Left Width|nul
-#l|Img Left Height|null|Img Right|null|Img Right Width|null|Img Right H
-#eight|null|Event Method|string|on_menuCogoMeasurementsBetweenPoints|Cl
-#ass Variable|integer|1|class|CanvasMenu|17|Name|string|menuTraverse|Cl
-#ass Name|string|Menu|Import Name|string|gui|Accel|null|Label|string|Tr
-#averse|Label Left|null|Label Right|null|Is shaded|null|Img Left|null|I
-#mg Left Width|null|Img Left Height|null|Img Right|string|9,c1,0~~~~~~~
-#~000~~~~~~00000~~~~0000000~~0000000000000000~~00000~~~~000~~~~~~0~~~~~
-#~~~|Img Right Width|integer|9|Img Right Height|integer|9|Event Method|
-#null|Class Variable|integer|1|Children|list|1|class|CanvasTextMenuItem
-#|16|Name|string|menuTraverseNew|Class Name|string|TextMenuItem|Import 
-#Name|string|gui|Accel|null|Label|string|New|Label Left|null|Label Righ
-#t|null|Is shaded|null|Img Left|null|Img Left Width|null|Img Left Heigh
-#t|null|Img Right|null|Img Right Width|null|Img Right Height|null|Event
-# Method|string|on_menuTraverseNew|Class Variable|integer|1|class|Canva
-#sMenu|17|Name|string|menuParcels|Class Name|string|Menu|Import Name|st
-#ring|gui|Accel|null|Label|string|Parcels|Label Left|null|Label Right|n
-#ull|Is shaded|null|Img Left|null|Img Left Width|null|Img Left Height|n
-#ull|Img Right|string|9,c1,0~~~~~~~~000~~~~~~00000~~~~0000000~~00000000
-#00000000~~00000~~~~000~~~~~~0~~~~~~~~|Img Right Width|integer|9|Img Ri
-#ght Height|integer|9|Event Method|null|Class Variable|integer|1|Childr
-#en|list|0|Initial Focus|null|Event Handlers|null|

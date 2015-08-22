@@ -1,0 +1,10 @@
+
+class Parcel(parcelName, points, area)
+	method calculateArea()
+	end
+	
+initially
+	parcelName := @parcelNameNum
+	points := []
+	area := 0.0
+end
